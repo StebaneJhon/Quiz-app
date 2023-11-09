@@ -65,4 +65,10 @@ dependencies {
 
     implementation ("com.google.android.material:material:1.9.0")
     implementation ("androidx.recyclerview:recyclerview:1.3.1")
+
+    // View Pager
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
+    // Fragments
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 }

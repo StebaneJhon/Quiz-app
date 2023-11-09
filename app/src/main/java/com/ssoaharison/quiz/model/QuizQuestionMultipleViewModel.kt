@@ -24,9 +24,9 @@ class QuizQuestionMultipleViewModel constructor(
     }
     val loading = MutableLiveData<Boolean>()
 
-    fun getQuizQuestionMultiple(amount: Int, type: String) {
+    fun getQuizQuestionMultiple(amount: Int, category: Int, difficulty: String, type: String) {
         job = viewModelScope.launch {
-            val response = quizRepository.getQuizQuestionMultiple("$amount", type)
+            val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
             if (response.isSuccessful) {
                 questionList.postValue(response.body())
                 loading.value = false
@@ -34,6 +34,13 @@ class QuizQuestionMultipleViewModel constructor(
                 onError("Error: ${response.message()}")
             }
         }
+    }
+
+    private fun setCategory(category: Int): String {
+        if (category > 0) {
+            return "$category"
+        }
+        return ""
     }
 
 
@@ -53,6 +60,7 @@ class QuizQuestionMultipleViewModelFactory constructor(private val repository: Q
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(QuizQuestionMultipleViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
             QuizQuestionMultipleViewModel(this.repository) as T
         } else {
             throw IllegalArgumentException("ViewModel Not Found")

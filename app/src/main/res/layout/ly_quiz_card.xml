@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:backgroundTint="?colorSurfaceContainerLow"
+    app:cardCornerRadius="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ltQuizQuestionContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:textAlignment="center"
+            android:layout_weight="1"
+            android:background="@drawable/quiz_question_container_border"
+            android:backgroundTint="@color/green">
+
+            <TextView
+                android:id="@+id/tvProgression"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="15 - 20"
+                android:textColor="?colorOnPrimary"
+                android:textSize="25sp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:fontFamily="@font/open_pans_light"
+                android:textAlignment="center"/>
+
+            <TextView
+                android:id="@+id/tvQuizQuestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="1. What is the capital of Madagascar?"
+                android:textAlignment="center"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:textColor="?colorOnPrimary"
+                android:textSize="30sp"
+                android:fontFamily="@font/noto_serif_display_semi_bold"/>
+
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btAnswer1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?colorSurfaceContainer"
+                android:textColor="?colorOnSurface"
+                android:fontFamily="@font/open_pans_light"
+                app:cornerRadius="20dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                tools:text="Something"
+                android:textSize="20sp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btAnswer2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?colorSurfaceContainer"
+                android:textColor="?colorOnSurface"
+                android:fontFamily="@font/open_pans_light"
+                app:cornerRadius="20dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginTop="15dp"
+                tools:text="Something"
+                android:textSize="20sp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btAnswer3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?colorSurfaceContainer"
+                android:textColor="?colorOnSurface"
+                android:fontFamily="@font/open_pans_light"
+                app:cornerRadius="20dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginTop="15dp"
+                tools:text="Something"
+                android:textSize="20sp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btAnswer4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?colorSurfaceContainer"
+                android:textColor="?colorOnSurface"
+                android:fontFamily="@font/open_pans_light"
+                app:cornerRadius="20dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginTop="15dp"
+                tools:text="Something"
+                android:textSize="20sp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

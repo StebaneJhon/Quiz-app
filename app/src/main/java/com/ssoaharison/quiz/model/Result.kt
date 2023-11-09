@@ -1,8 +1,11 @@
 package com.ssoaharison.quiz.model
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Result(
     @SerializedName("category")
     val category: String,
@@ -16,4 +19,4 @@ data class Result(
     val question: String,
     @SerializedName("type")
     val type: String
-)
+): Parcelable
