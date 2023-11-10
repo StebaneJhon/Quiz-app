@@ -44,7 +44,7 @@ class QuizFragment : Fragment() {
         quizViewModel.getQuizQuestionMultiple(10, 0, "", "multiple")
         quizViewModel.questionList.observe(viewLifecycleOwner) {
             val _adapter = ViewPagerAdapter(
-                it.results,
+                it,
                 appContext!!
             )
             binding.viewPager.apply {

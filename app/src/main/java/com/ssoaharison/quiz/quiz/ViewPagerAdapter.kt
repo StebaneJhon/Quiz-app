@@ -2,10 +2,13 @@ package com.ssoaharison.quiz.quiz
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.ssoaharison.quiz.R
@@ -45,16 +48,18 @@ class ViewPagerAdapter(
             context: Context,
             questionNumber: Int
         ) {
-            tvQuestion.text = question.question
+
+            tvQuestion.text = HtmlCompat.fromHtml(question.question, HtmlCompat.FROM_HTML_MODE_LEGACY)
             tvProgression.text = context.getString(
                 R.string.progression_text,
                 "$questionNumber",
                 "${questions.size}"
             )
-            answer1.text = question.incorrectAnswers[0]
-            answer2.text = question.incorrectAnswers[1]
-            answer3.text = question.incorrectAnswers[2]
-            answer4.text = question.correctAnswer
+            answer1.text = HtmlCompat.fromHtml(question.incorrectAnswers[0], HtmlCompat.FROM_HTML_MODE_LEGACY)
+            answer2.text = HtmlCompat.fromHtml(question.incorrectAnswers[1], HtmlCompat.FROM_HTML_MODE_LEGACY)
+            answer3.text = HtmlCompat.fromHtml(question.incorrectAnswers[2], HtmlCompat.FROM_HTML_MODE_LEGACY)
+            answer4.text = HtmlCompat.fromHtml(question.correctAnswer, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
         }
 
     }

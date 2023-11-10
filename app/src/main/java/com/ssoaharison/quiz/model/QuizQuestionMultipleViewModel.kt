@@ -5,19 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ssoaharison.quiz.backend.QuizRepository
+import com.ssoaharison.quiz.util.EXAMPLE_QUESTIONS
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class QuizQuestionMultipleViewModel constructor(
     private val quizRepository: QuizRepository
 ): ViewModel() {
 
     val errorMessage = MutableLiveData<String>()
-    val questionList = MutableLiveData<QuizQuestions>()
+    val questionList = MutableLiveData<List<Result>>()
     var job: Job? = null
     val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         onError("Exception handled: ${throwable.localizedMessage}")
@@ -26,6 +24,7 @@ class QuizQuestionMultipleViewModel constructor(
 
     fun getQuizQuestionMultiple(amount: Int, category: Int, difficulty: String, type: String) {
         job = viewModelScope.launch {
+            /*
             val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
             if (response.isSuccessful) {
                 questionList.postValue(response.body())
@@ -33,6 +32,9 @@ class QuizQuestionMultipleViewModel constructor(
             } else {
                 onError("Error: ${response.message()}")
             }
+
+             */
+            questionList.postValue(EXAMPLE_QUESTIONS)
         }
     }
 

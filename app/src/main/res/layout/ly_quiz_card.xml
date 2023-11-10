@@ -12,13 +12,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ltQuizQuestionContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:gravity="center"
-            android:orientation="vertical"
-            android:textAlignment="center"
             android:layout_weight="1"
             android:background="@drawable/quiz_question_container_border"
             android:backgroundTint="@color/green">
@@ -27,93 +25,143 @@
                 android:id="@+id/tvProgression"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="15 - 20"
-                android:textColor="?colorOnPrimary"
-                android:textSize="25sp"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
                 android:fontFamily="@font/open_pans_light"
-                android:textAlignment="center"/>
+                android:textAlignment="center"
+                android:textColor="?colorOnPrimary"
+                app:autoSizeMaxTextSize="50sp"
+                app:autoSizeMinTextSize="15sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.214"
+                tools:text="15 - 20" />
 
             <TextView
                 android:id="@+id/tvQuizQuestion"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:text="1. What is the capital of Madagascar?"
+                android:layout_height="0dp"
+                android:fontFamily="@font/noto_serif_display_semi_bold"
                 android:textAlignment="center"
-                android:layout_marginStart="25dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
                 android:textColor="?colorOnPrimary"
-                android:textSize="30sp"
-                android:fontFamily="@font/noto_serif_display_semi_bold"/>
+                app:autoSizeMaxTextSize="50sp"
+                app:autoSizeMinTextSize="15sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginStart="25dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvProgression"
+                app:layout_constraintStart_toStartOf="@+id/tvProgression"
+                app:layout_constraintTop_toBottomOf="@+id/tvProgression"
+                tools:text="1. What is the capital of Madagascar?" />
 
-        </LinearLayout>
-        
-        <LinearLayout
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btAnswer1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:backgroundTint="?colorSurfaceContainer"
-                android:textColor="?colorOnSurface"
                 android:fontFamily="@font/open_pans_light"
+                android:textColor="?colorOnSurface"
+                app:autoSizeMaxTextSize="50sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
                 app:cornerRadius="20dp"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
-                tools:text="Something"
-                android:textSize="20sp"/>
+                android:layout_marginTop="5dp"
+                app:layout_constraintBottom_toTopOf="@+id/btAnswer2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Something" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btAnswer2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:backgroundTint="?colorSurfaceContainer"
-                android:textColor="?colorOnSurface"
                 android:fontFamily="@font/open_pans_light"
+                android:textColor="?colorOnSurface"
+                app:autoSizeMaxTextSize="50sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
                 app:cornerRadius="20dp"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
-                android:layout_marginTop="15dp"
-                tools:text="Something"
-                android:textSize="20sp"/>
+                android:layout_marginTop="5dp"
+                app:layout_constraintBottom_toTopOf="@+id/btAnswer3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btAnswer1"
+                tools:text="Something" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btAnswer3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:backgroundTint="?colorSurfaceContainer"
-                android:textColor="?colorOnSurface"
                 android:fontFamily="@font/open_pans_light"
+                android:textColor="?colorOnSurface"
+                app:autoSizeMaxTextSize="50sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
                 app:cornerRadius="20dp"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
-                android:layout_marginTop="15dp"
-                tools:text="Something"
-                android:textSize="20sp"/>
+                android:layout_marginTop="5dp"
+                app:layout_constraintBottom_toTopOf="@+id/btAnswer4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btAnswer2"
+                tools:text="Something" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btAnswer4"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:backgroundTint="?colorSurfaceContainer"
-                android:textColor="?colorOnSurface"
                 android:fontFamily="@font/open_pans_light"
+                android:textColor="?colorOnSurface"
+                app:autoSizeMaxTextSize="50sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
                 app:cornerRadius="20dp"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
-                android:layout_marginTop="15dp"
-                tools:text="Something"
-                android:textSize="20sp"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btAnswer3"
+                tools:text="Something" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
