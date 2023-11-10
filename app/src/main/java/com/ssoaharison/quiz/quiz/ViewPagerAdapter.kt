@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -16,7 +17,8 @@ import com.ssoaharison.quiz.model.Result
 
 class ViewPagerAdapter(
     val questions: List<Result>,
-    val appContext: Context
+    val appContext: Context,
+    private val userChoice: (List<Any>) -> Unit
 ): RecyclerView.Adapter<ViewPagerAdapter.ViewPagerViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.ly_quiz_card, parent, false)
@@ -29,7 +31,8 @@ class ViewPagerAdapter(
         return holder.bind(
             questions[position],
             appContext,
-            position + 1
+            position + 1,
+            userChoice
         )
     }
 
@@ -37,6 +40,7 @@ class ViewPagerAdapter(
 
         private val tvQuestion: TextView = itemView.findViewById(R.id.tvQuizQuestion)
         private val tvProgression: TextView = itemView.findViewById(R.id.tvProgression)
+        private val quizQuestionContainer: ConstraintLayout = itemView.findViewById(R.id.clQuizQuestionContainer)
         private val answer1: MaterialButton = itemView.findViewById(R.id.btAnswer1)
         private val answer2: MaterialButton = itemView.findViewById(R.id.btAnswer2)
         private val answer3: MaterialButton = itemView.findViewById(R.id.btAnswer3)
@@ -46,7 +50,8 @@ class ViewPagerAdapter(
         fun bind(
             question: Result,
             context: Context,
-            questionNumber: Int
+            questionNumber: Int,
+            userChoice: (List<Any>) -> Unit
         ) {
 
             tvQuestion.text = HtmlCompat.fromHtml(question.question, HtmlCompat.FROM_HTML_MODE_LEGACY)
@@ -59,6 +64,11 @@ class ViewPagerAdapter(
             answer2.text = HtmlCompat.fromHtml(question.incorrectAnswers[1], HtmlCompat.FROM_HTML_MODE_LEGACY)
             answer3.text = HtmlCompat.fromHtml(question.incorrectAnswers[2], HtmlCompat.FROM_HTML_MODE_LEGACY)
             answer4.text = HtmlCompat.fromHtml(question.correctAnswer, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+            answer1.setOnClickListener { userChoice(listOf(question.correctAnswer, answer1.text.toString(), quizQuestionContainer)) }
+            answer2.setOnClickListener { userChoice(listOf(question.correctAnswer, answer2.text.toString(), quizQuestionContainer)) }
+            answer3.setOnClickListener { userChoice(listOf(question.correctAnswer, answer3.text.toString(), quizQuestionContainer)) }
+            answer4.setOnClickListener { userChoice(listOf(question.correctAnswer, answer4.text.toString(), quizQuestionContainer)) }
 
         }
 
