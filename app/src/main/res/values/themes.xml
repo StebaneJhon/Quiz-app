@@ -16,7 +16,31 @@
         <item name="colorOnSurfaceVariant">@color/white</item>
         <item name="colorError">@color/red700</item>
         <item name="colorOnError">@color/white</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+    </style>
+    <style name="Theme.Quiz" parent="Base.Theme.Quiz" />
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
+        <item name="titleTextColor">?colorPrimary</item>
+        <item name="android:textColor">?colorOnSurface</item>
+        <item name="shapeAppearanceOverlay">@style/DialogCorners</item>
+        <item name="backgroundColor">?colorSurfaceContainerLow</item>
+        <item name="android:background">?colorSurfaceContainerLow</item>
     </style>
 
-    <style name="Theme.Quiz" parent="Base.Theme.Quiz" />
+    <style name="Widget.App.Button" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?colorOnSurface</item>
+    </style>
+
+    <!-- Rounded dialog theme -->
+    <style name="MaterialAlertDialog_rounded" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/DialogCorners</item>
+    </style>
+
+    <style name="DialogCorners">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
 </resources>

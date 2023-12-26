@@ -76,7 +76,10 @@ class QuizFragment : Fragment() {
             launchQuiz()
         }
 
-
+        binding.btSettings.setOnClickListener {
+            val newDeckDialog = SettingsFragment()
+            newDeckDialog.show(parentFragmentManager, "New Deck Dialog")
+        }
     }
 
     private fun launchQuiz() {
@@ -113,17 +116,16 @@ class QuizFragment : Fragment() {
     }
 
     private fun startQuiz(questionList: List<Result>){
-        setScore(questionList)
+        setScore()
         val _adapter = ViewPagerAdapter(questionList, appContext!!) {
             if (quizViewModel.isUserChoiceCorrect(it)) {
                 if ( binding.viewPager.currentItem < round) {
                     Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
                 } else {
-
                     userScore += 1
                     round += 1
                     binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
-                    setScore(questionList)
+                    setScore()
                 }
             } else {
                 giveFeedback(it[2] as View, R.drawable.quiz_question_container_border_on_wrong)
@@ -134,14 +136,8 @@ class QuizFragment : Fragment() {
         }
     }
 
-    private fun setScore(questionList: List<Result>) {
-        val color = ArgbEvaluator().evaluate(
-            userScore.toFloat() / questionList.size,
-            ContextCompat.getColor(appContext!!, R.color.red700),
-            ContextCompat.getColor(appContext!!, R.color.green)
-        ) as Int
+    private fun setScore() {
         binding.tvUserScore.text = getString(R.string.text_score, "$userScore")
-        binding.cvUserScoreContainer.setCardBackgroundColor(color)
     }
 
     private fun giveFeedback(viewToAnimate: View, color: Int) {

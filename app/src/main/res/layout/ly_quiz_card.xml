@@ -72,6 +72,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.button.MaterialButton
+                android:visibility="gone"
                 android:id="@+id/btAnswer1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -94,6 +95,7 @@
                 tools:text="Something" />
 
             <com.google.android.material.button.MaterialButton
+                android:visibility="gone"
                 android:id="@+id/btAnswer2"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

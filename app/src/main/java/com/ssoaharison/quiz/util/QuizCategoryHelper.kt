@@ -29,6 +29,6 @@ class QuizCategoryHelper {
         "Cartoon & Animation" to 32
     )
 
-    fun getCategories() = categories.keys
+    fun getCategories() = categories.keys.toTypedArray()
     fun selectCategory(category: String) = categories[category]
 }
