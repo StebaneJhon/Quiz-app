@@ -39,7 +39,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.214"
-                tools:text="15 - 20" />
+                tools:text="15 - 20"/>
 
             <TextView
                 android:id="@+id/tvQuizQuestion"

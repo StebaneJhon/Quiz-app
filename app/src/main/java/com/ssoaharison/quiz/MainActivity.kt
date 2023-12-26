@@ -1,11 +1,9 @@
 package com.ssoaharison.quiz
 
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import com.ssoaharison.quiz.databinding.ActivityMainBinding
-import com.ssoaharison.quiz.model.QuizQuestionMultipleViewModel
 import com.ssoaharison.quiz.quiz.QuizFragment
 
 

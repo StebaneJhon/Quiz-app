@@ -14,24 +14,39 @@
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_border"
         android:backgroundTint="?colorSurfaceContainerLow"
+        android:contentDescription="@string/restart_button_description"
         android:padding="15dp"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/ic_restart"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/restart_button_description" />
+        app:layout_constraintEnd_toStartOf="@+id/btSettings"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvQuizCategory"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:textColor="?colorOnSurface"
-        android:textSize="25sp"
-        android:fontFamily="@font/open_sans_bold"
-        app:layout_constraintStart_toEndOf="@+id/btRestart"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Art" />
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvUserScoreContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btRestart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btRestart"
+        app:cardBackgroundColor="@color/red700"
+        app:cardCornerRadius="5dp">
+
+        <TextView
+            android:id="@+id/tvUserScore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="@string/text_score"
+            android:textAlignment="center"
+            android:textColor="?colorOnPrimary"
+            android:textSize="25sp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </com.google.android.material.card.MaterialCardView>
 
     <ImageButton
         android:id="@+id/btSettings"

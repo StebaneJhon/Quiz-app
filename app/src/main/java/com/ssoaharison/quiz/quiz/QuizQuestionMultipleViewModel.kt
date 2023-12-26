@@ -1,13 +1,13 @@
-package com.ssoaharison.quiz.model
+package com.ssoaharison.quiz.quiz
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ssoaharison.quiz.backend.QuizRepository
-import com.ssoaharison.quiz.quiz.UiState
+import com.ssoaharison.quiz.model.Result
+import com.ssoaharison.quiz.util.UiState
 import com.ssoaharison.quiz.util.EXAMPLE_QUESTIONS
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

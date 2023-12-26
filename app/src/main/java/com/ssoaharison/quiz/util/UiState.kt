@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ssoaharison.quiz.quiz
+package com.ssoaharison.quiz.util
 
 sealed class UiState<out T> {
     object Loading : UiState<Nothing>()
