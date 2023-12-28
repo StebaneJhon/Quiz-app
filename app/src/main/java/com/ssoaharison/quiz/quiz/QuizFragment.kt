@@ -12,6 +12,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -25,6 +26,7 @@ import com.ssoaharison.quiz.backend.RetrofitClient
 import com.ssoaharison.quiz.databinding.FragmentQuizBinding
 import com.ssoaharison.quiz.model.Result
 import com.ssoaharison.quiz.model.SettingsModel
+import com.ssoaharison.quiz.util.QUESTION_FONT_TINTS
 import com.ssoaharison.quiz.util.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -99,7 +101,7 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
     private fun launchQuiz(settingsModel: SettingsModel) {
         userScore = 0
         round = 0
-        quizQuestionContainer = getView()?.findViewById(R.id.clQuizQuestionContainer)
+        quizQuestionContainer = getView()?.findViewById(R.id.cl_quiz_uestion_container)
         binding.tvUserScore.text = getString(R.string.text_score, "$userScore")
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -143,7 +145,7 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
                     setScore()
                     return@ViewPagerAdapter
             } else {
-                giveFeedback(it[2] as View, R.drawable.quiz_question_container_border_on_wrong)
+                giveFeedback(it[2] as View, it[4] as Int)
                 return@ViewPagerAdapter
             }
         }
@@ -159,10 +161,11 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
 
     private fun giveFeedback(viewToAnimate: View, color: Int) {
         viewToAnimate.startAnimation(animFadeIn)
-        viewToAnimate.background = AppCompatResources.getDrawable(appContext!!, color)
+        //viewToAnimate.background = AppCompatResources.getDrawable(appContext!!, color)
+        viewToAnimate.backgroundTintList = ContextCompat.getColorStateList(appContext!!, R.color.red700)
         lifecycleScope.launch {
             delay(700)
-            viewToAnimate.background = AppCompatResources.getDrawable(appContext!!, R.color.green)
+            viewToAnimate.backgroundTintList = ContextCompat.getColorStateList(appContext!!, color)
             viewToAnimate.startAnimation(animFadeIn)
         }
     }

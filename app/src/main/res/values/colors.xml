@@ -15,4 +15,15 @@
     <color name="grey15">#fbfbfb</color>
 
     <color name="green">#03C988</color>
+    <color name="blue">#3559E0</color>
+    <color name="mint">#85E6C5</color>
+    <color name="sage">#4F6F52</color>
+    <color name="yellow">#F4CE14</color>
+    <color name="beige">#FFE7C1</color>
+    <color name="brown">#776B5D</color>
+    <color name="orange">#EC8F5E</color>
+    <color name="peach">#E0AED0</color>
+    <color name="pink">#FF90BC</color>
+    <color name="purple">#C499F3</color>
+    <color name="navy">#3559E0</color>
 </resources>
