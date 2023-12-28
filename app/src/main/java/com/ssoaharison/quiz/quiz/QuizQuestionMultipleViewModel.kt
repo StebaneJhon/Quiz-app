@@ -28,8 +28,10 @@ class QuizQuestionMultipleViewModel constructor(
         job?.cancel()
         job = viewModelScope.launch {
             try {
-                val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
-                _questionList.value = UiState.Success(response.body()?.results!!)
+                //val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
+                val response = EXAMPLE_QUESTIONS
+                //_questionList.value = UiState.Success(response.body()?.results!!)
+                _questionList.value = UiState.Success(response)
             } catch (e:IOException) {
                 _questionList.value = UiState.Error(e.message.toString())
             }

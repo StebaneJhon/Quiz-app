@@ -132,22 +132,25 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
     private fun startQuiz(questionList: List<Result>){
         setScore()
         val _adapter = ViewPagerAdapter(questionList, appContext!!) {
+            if ( binding.viewPager.currentItem < round) {
+                Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
+                return@ViewPagerAdapter
+            }
             if (quizViewModel.isUserChoiceCorrect(it)) {
-                if ( binding.viewPager.currentItem < round) {
-                    Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
-                } else {
                     userScore += 1
                     round += 1
                     binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
                     setScore()
-                }
+                    return@ViewPagerAdapter
             } else {
                 giveFeedback(it[2] as View, R.drawable.quiz_question_container_border_on_wrong)
+                return@ViewPagerAdapter
             }
         }
         binding.viewPager.apply {
             adapter = _adapter
         }
+        return
     }
 
     private fun setScore() {

@@ -14,9 +14,9 @@ val EXAMPLE_QUESTIONS = listOf<Result>(
     ),
     Result(
         "Entertainment: Video Games",
-        "Mercy",
+        "True",
         "medium",
-        listOf("Reaper", "Sonic", "Ana"),
+        listOf("True", "False"),
         "Which Overwatch character says the line &quot;Heroes never die!&quot;?",
         "multiple"
     ),
@@ -30,9 +30,9 @@ val EXAMPLE_QUESTIONS = listOf<Result>(
     ),
     Result(
         "Entertainment: Cartoon & Animations",
-        "10",
+        "False",
         "medium",
-        listOf("12", "11", "13"),
+        listOf("False", "True"),
         "How many episodes were in season five of Samurai Jack?",
         "multiple"
     ),
