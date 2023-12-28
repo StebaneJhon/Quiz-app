@@ -1,6 +1,5 @@
 package com.ssoaharison.quiz.quiz
 
-import android.animation.ArgbEvaluator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
@@ -11,28 +10,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.Snackbar
+import com.ssoaharison.quiz.QuizCallback
 import com.ssoaharison.quiz.R
 import com.ssoaharison.quiz.backend.QuizRepository
 import com.ssoaharison.quiz.backend.RetrofitClient
 import com.ssoaharison.quiz.databinding.FragmentQuizBinding
 import com.ssoaharison.quiz.model.Result
+import com.ssoaharison.quiz.model.SettingsModel
 import com.ssoaharison.quiz.util.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class QuizFragment : Fragment() {
+class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
 
     private var _binding: FragmentQuizBinding? = null
+
+    private var callback: QuizCallback? = null
     private val binding get() = _binding!!
     private var appContext: Context? = null
     private lateinit var animFadeIn: Animation
@@ -40,6 +41,12 @@ class QuizFragment : Fragment() {
     private var quizQuestionContainer: ConstraintLayout? = null
     private var userScore: Int = 0
     private var round: Int = 0
+    private lateinit var settingsModel: SettingsModel
+
+    fun setCallback(callback: QuizCallback) {
+        this.callback = callback
+        settingsModel = callback.getSettingsModel()
+    }
 
     private val quizViewModel by lazy {
         val repository = QuizRepository(RetrofitClient)
@@ -70,19 +77,26 @@ class QuizFragment : Fragment() {
         binding.viewPager.isUserInputEnabled = false
         animFadeIn = AnimationUtils.loadAnimation(appContext, R.anim.fade_in)
         animFadeOut = AnimationUtils.loadAnimation(appContext, R.anim.fade_out)
-        launchQuiz()
+
+        launchQuiz(settingsModel)
 
         binding.btRestart.setOnClickListener {
-            launchQuiz()
+            launchQuiz(settingsModel)
         }
 
         binding.btSettings.setOnClickListener {
             val newDeckDialog = SettingsFragment()
-            newDeckDialog.show(parentFragmentManager, "New Deck Dialog")
+            newDeckDialog.show(parentFragmentManager, "Settings Dialog")
         }
     }
 
-    private fun launchQuiz() {
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+
+    private fun launchQuiz(settingsModel: SettingsModel) {
         userScore = 0
         round = 0
         quizQuestionContainer = getView()?.findViewById(R.id.clQuizQuestionContainer)
@@ -90,7 +104,7 @@ class QuizFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 quizViewModel.apply {
-                    getQuizQuestionMultiple(10, 0, "", "multiple")
+                    getQuizQuestionMultiple(settingsModel.number!!, settingsModel.category!!, settingsModel.difficulty!!, settingsModel.type!!)
                     questionList.collect {
                         when (it) {
                             is UiState.Loading -> {
@@ -150,8 +164,7 @@ class QuizFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun getSettingsModel(settingsModel: SettingsModel) {
+        launchQuiz(settingsModel)
     }
 }

@@ -29,6 +29,19 @@ class QuizCategoryHelper {
         "Cartoon & Animation" to 32
     )
 
+    private val difficulty = arrayOf("Easy", "Medium", "Hard", "Any")
+    private val type = arrayOf("Any", "Multiple Choice", "True & False")
+
+    fun getDifficulty() = difficulty
+    fun getType() = type
+
+    fun decodeType(type: String): String {
+        return when (type) {
+            "True & False" -> { "boolean" }
+            "Multiple Choice" -> { "multiple" }
+            else -> { "" }
+        }
+    }
     fun getCategories() = categories.keys.toTypedArray()
     fun selectCategory(category: String) = categories[category]
 }

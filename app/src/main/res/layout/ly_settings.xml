@@ -15,7 +15,6 @@
         app:icon="@drawable/ic_back"
         app:iconSize="25sp"
         app:iconTint="?colorOnSurface"
-        android:backgroundTint="?colorSurfaceContainerLow"
         android:contentDescription="@string/back_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +48,8 @@
             android:id="@+id/tv_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none" />
+            android:inputType="none"
+            android:text="Any"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,16 +97,16 @@
         android:layout_height="wrap_content"
         android:hint="@string/question_number_text_hint"
         android:layout_marginTop="10dp"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tf_type">
 
-        <AutoCompleteTextView
-            android:id="@+id/tv_questionNumber"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tv_question_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none" />
+            android:inputType="number"
+            android:text="10"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
