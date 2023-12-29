@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.Bundle
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -22,9 +24,6 @@ class SettingsFragment(): AppCompatDialogFragment() {
     private var tvNumber: TextInputEditText? = null
     private var btDismiss: MaterialButton? = null
     private var btApply: MaterialButton? = null
-
-    private var listener: NewDialogListener? = null
-
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -45,34 +44,22 @@ class SettingsFragment(): AppCompatDialogFragment() {
 
         btDismiss?.setOnClickListener { dismiss() }
         btApply?.setOnClickListener {
-            val settingsModel = SettingsModel(
-                number = tvNumber?.text.toString().toInt(),
-                category = QuizCategoryHelper().selectCategory(tvCategory?.text.toString()),
-                difficulty = tvDifficulty?.text.toString().lowercase(),
-                type = QuizCategoryHelper().decodeType(tvType?.text.toString())
-            )
-
-            listener?.getSettingsModel(settingsModel)
-            dismiss()
+            val questionSum = tvNumber?.text
+            if (questionSum.isNullOrEmpty() || questionSum.toString().toInt() < 5) {
+                tvNumber?.error = "Questions must be 5 or more for a better experience."
+            } else {
+                val settingsModel = SettingsModel(
+                    number = questionSum.toString().toInt(),
+                    category = QuizCategoryHelper().selectCategory(tvCategory?.text.toString()),
+                    difficulty = tvDifficulty?.text.toString().lowercase(),
+                    type = QuizCategoryHelper().decodeType(tvType?.text.toString())
+                )
+                setFragmentResult("requestKey", bundleOf("requestKey" to settingsModel))
+                dismiss()
+            }
         }
-
 
         builder.setView(view)
         return builder.create()
     }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            listener = context as NewDialogListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException((context.toString() +
-                    " must implement NoticeDialogListener"))
-        }
-    }
-
-    interface NewDialogListener {
-        fun getSettingsModel(settingsModel: SettingsModel)
-    }
-
 }

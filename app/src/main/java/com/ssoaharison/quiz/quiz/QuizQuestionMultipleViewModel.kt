@@ -23,15 +23,17 @@ class QuizQuestionMultipleViewModel constructor(
     val questionList: StateFlow<UiState<List<Result>>> = _questionList.asStateFlow()
     var job: Job? = null
     val loading = MutableLiveData<Boolean>()
+    private var userScore = 0
+    private var round = 0
 
     fun getQuizQuestionMultiple(amount: Int, category: Int, difficulty: String, type: String) {
         job?.cancel()
         job = viewModelScope.launch {
             try {
-                //val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
-                val response = EXAMPLE_QUESTIONS
-                //_questionList.value = UiState.Success(response.body()?.results!!)
-                _questionList.value = UiState.Success(response)
+                val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
+                _questionList.value = UiState.Success(response.body()?.results!!)
+                //val response = EXAMPLE_QUESTIONS
+                //_questionList.value = UiState.Success(response)
             } catch (e:IOException) {
                 _questionList.value = UiState.Error(e.message.toString())
             }
@@ -39,6 +41,26 @@ class QuizQuestionMultipleViewModel constructor(
     }
 
     fun isUserChoiceCorrect(choice: List<Any>) = choice[0] == choice[1]
+
+    fun incrementUserScore() {
+        userScore += 1
+    }
+
+    fun incrementRound() {
+        round += 1
+    }
+
+    fun getRound() = round
+
+    fun getUserScore() = userScore
+
+    fun initUserScore() {
+        userScore = 0
+    }
+
+    fun initRound() {
+        round = 0
+    }
 
     private fun setCategory(category: Int): String {
         if (category > 0) {

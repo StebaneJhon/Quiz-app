@@ -2,7 +2,9 @@ package com.ssoaharison.quiz.quiz
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,45 +12,35 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.Snackbar
-import com.ssoaharison.quiz.QuizCallback
 import com.ssoaharison.quiz.R
 import com.ssoaharison.quiz.backend.QuizRepository
 import com.ssoaharison.quiz.backend.RetrofitClient
 import com.ssoaharison.quiz.databinding.FragmentQuizBinding
 import com.ssoaharison.quiz.model.Result
 import com.ssoaharison.quiz.model.SettingsModel
-import com.ssoaharison.quiz.util.QUESTION_FONT_TINTS
 import com.ssoaharison.quiz.util.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
+class QuizFragment : Fragment() {
 
     private var _binding: FragmentQuizBinding? = null
-
-    private var callback: QuizCallback? = null
     private val binding get() = _binding!!
+
     private var appContext: Context? = null
     private lateinit var animFadeIn: Animation
     private lateinit var animFadeOut: Animation
     private var quizQuestionContainer: ConstraintLayout? = null
-    private var userScore: Int = 0
-    private var round: Int = 0
-    private lateinit var settingsModel: SettingsModel
-
-    fun setCallback(callback: QuizCallback) {
-        this.callback = callback
-        settingsModel = callback.getSettingsModel()
-    }
+    private var settingsModel: SettingsModel? = null
 
     private val quizViewModel by lazy {
         val repository = QuizRepository(RetrofitClient)
@@ -80,16 +72,31 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
         animFadeIn = AnimationUtils.loadAnimation(appContext, R.anim.fade_in)
         animFadeOut = AnimationUtils.loadAnimation(appContext, R.anim.fade_out)
 
-        launchQuiz(settingsModel)
+        settingsModel = SettingsModel(10, 0, "", "")
+        launchQuiz(settingsModel!!)
 
         binding.btRestart.setOnClickListener {
-            launchQuiz(settingsModel)
+            launchQuiz(settingsModel!!)
         }
 
         binding.btSettings.setOnClickListener {
             val newDeckDialog = SettingsFragment()
             newDeckDialog.show(parentFragmentManager, "Settings Dialog")
+
+            setFragmentResultListener("requestKey") { _, bundle ->
+                val result = bundle.parcelable<SettingsModel>("requestKey")
+                result?.let {
+                    settingsModel = it
+                    launchQuiz(it)
+                }
+            }
         }
+
+    }
+
+    inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
+        SDK_INT >= 33 -> getParcelable(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getParcelable(key) as? T
     }
 
     override fun onDestroyView() {
@@ -97,12 +104,24 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
         _binding = null
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("viewPagerPosition", binding.viewPager.currentItem)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            binding.viewPager.currentItem = savedInstanceState.getInt("viewPagerPosition")
+        }
+    }
+
 
     private fun launchQuiz(settingsModel: SettingsModel) {
-        userScore = 0
-        round = 0
+        quizViewModel.initUserScore()
+        quizViewModel.initRound()
         quizQuestionContainer = getView()?.findViewById(R.id.cl_quiz_uestion_container)
-        binding.tvUserScore.text = getString(R.string.text_score, "$userScore")
+        binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 quizViewModel.apply {
@@ -119,8 +138,8 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
                             }
 
                             is UiState.Success -> {
-                                userScore = 0
-                                round = 0
+                                quizViewModel.initUserScore()
+                                quizViewModel.initRound()
                                 binding.cvLoading.isVisible = false
                                 startQuiz(it.data)
                             }
@@ -134,13 +153,13 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
     private fun startQuiz(questionList: List<Result>){
         setScore()
         val _adapter = ViewPagerAdapter(questionList, appContext!!) {
-            if ( binding.viewPager.currentItem < round) {
+            if ( binding.viewPager.currentItem < quizViewModel.getRound()) {
                 Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
                 return@ViewPagerAdapter
             }
             if (quizViewModel.isUserChoiceCorrect(it)) {
-                    userScore += 1
-                    round += 1
+                    quizViewModel.incrementUserScore()
+                    quizViewModel.incrementRound()
                     binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
                     setScore()
                     return@ViewPagerAdapter
@@ -156,21 +175,16 @@ class QuizFragment : Fragment(), SettingsFragment.NewDialogListener {
     }
 
     private fun setScore() {
-        binding.tvUserScore.text = getString(R.string.text_score, "$userScore")
+        binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
     }
 
     private fun giveFeedback(viewToAnimate: View, color: Int) {
         viewToAnimate.startAnimation(animFadeIn)
-        //viewToAnimate.background = AppCompatResources.getDrawable(appContext!!, color)
         viewToAnimate.backgroundTintList = ContextCompat.getColorStateList(appContext!!, R.color.red700)
         lifecycleScope.launch {
             delay(700)
             viewToAnimate.backgroundTintList = ContextCompat.getColorStateList(appContext!!, color)
             viewToAnimate.startAnimation(animFadeIn)
         }
-    }
-
-    override fun getSettingsModel(settingsModel: SettingsModel) {
-        launchQuiz(settingsModel)
     }
 }

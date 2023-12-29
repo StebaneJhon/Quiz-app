@@ -20,10 +20,9 @@ import com.ssoaharison.quiz.quiz.QuizQuestionMultipleViewModelFactory
 import com.ssoaharison.quiz.quiz.SettingsFragment
 
 
-class MainActivity : AppCompatActivity(), SettingsFragment.NewDialogListener, QuizCallback {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var _settingsModel: SettingsModel? = null
     private var quizFragment: QuizFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +30,6 @@ class MainActivity : AppCompatActivity(), SettingsFragment.NewDialogListener, Qu
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
 
         window.statusBarColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainerLowest, Color.BLACK)
         if (savedInstanceState == null) {
@@ -44,22 +42,7 @@ class MainActivity : AppCompatActivity(), SettingsFragment.NewDialogListener, Qu
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             quizFragment = QuizFragment()
-            quizFragment!!.setCallback(this@MainActivity)
             add(R.id.fragment_container_view, quizFragment!!)
         }
     }
-
-    override fun getSettingsModel(settingsModel: SettingsModel) {
-        _settingsModel = settingsModel
-        startQuizFragment()
-    }
-
-    override fun getSettingsModel(): SettingsModel {
-        return if (_settingsModel == null) {
-            SettingsModel(10, 0, "", "")
-        } else {
-            _settingsModel!!
-        }
-    }
-
 }
