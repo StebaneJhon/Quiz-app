@@ -64,7 +64,7 @@ class ViewPagerAdapter(
                 "${questions.size}"
             )
             val answers = randomizeAnswers(question.incorrectAnswers, question.correctAnswer)
-            if (question.incorrectAnswers.size == 2) {
+            if (answers.size == 2) {
                 answer1.text = HtmlCompat.fromHtml(answers[0], HtmlCompat.FROM_HTML_MODE_LEGACY)
                 answer2.text = HtmlCompat.fromHtml(answers[1], HtmlCompat.FROM_HTML_MODE_LEGACY)
                 answer3.visibility = View.GONE

@@ -73,10 +73,11 @@ class QuizFragment : Fragment() {
         animFadeOut = AnimationUtils.loadAnimation(appContext, R.anim.fade_out)
 
         settingsModel = SettingsModel(10, 0, "", "")
-        launchQuiz(settingsModel!!)
+        getQuizQuestions(settingsModel!!)
+        startQuiz()
 
         binding.btRestart.setOnClickListener {
-            launchQuiz(settingsModel!!)
+            startQuiz()
         }
 
         binding.btSettings.setOnClickListener {
@@ -87,11 +88,11 @@ class QuizFragment : Fragment() {
                 val result = bundle.parcelable<SettingsModel>("requestKey")
                 result?.let {
                     settingsModel = it
-                    launchQuiz(it)
+                    getQuizQuestions(it)
+                    startQuiz()
                 }
             }
         }
-
     }
 
     inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
@@ -117,61 +118,62 @@ class QuizFragment : Fragment() {
     }
 
 
-    private fun launchQuiz(settingsModel: SettingsModel) {
+    private fun getQuizQuestions(settingsModel: SettingsModel) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                quizViewModel.getQuizQuestionMultiple(settingsModel.number!!, settingsModel.category!!, settingsModel.difficulty!!, settingsModel.type!!)
+            }
+        }
+    }
+
+    private fun startQuiz(){
         quizViewModel.initUserScore()
         quizViewModel.initRound()
         quizQuestionContainer = getView()?.findViewById(R.id.cl_quiz_uestion_container)
         binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
+        setScore()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                quizViewModel.apply {
-                    getQuizQuestionMultiple(settingsModel.number!!, settingsModel.category!!, settingsModel.difficulty!!, settingsModel.type!!)
-                    questionList.collect {
-                        when (it) {
-                            is UiState.Loading -> {
-                                binding.cvLoading.isVisible = true
-                            }
+                quizViewModel.questionList.collect {
+                    when (it) {
+                        is UiState.Loading -> {
+                            binding.cvLoading.isVisible = true
+                        }
 
-                            is UiState.Error -> {
-                                binding.cvLoading.isVisible = false
-                                Log.e(TAG, it.errorMessage)
-                            }
+                        is UiState.Error -> {
+                            binding.cvLoading.isVisible = false
+                            Log.e(TAG, it.errorMessage)
+                        }
 
-                            is UiState.Success -> {
-                                quizViewModel.initUserScore()
-                                quizViewModel.initRound()
-                                binding.cvLoading.isVisible = false
-                                startQuiz(it.data)
+                        is UiState.Success -> {
+                            quizViewModel.initUserScore()
+                            quizViewModel.initRound()
+                            binding.cvLoading.isVisible = false
+                            val _adapter = ViewPagerAdapter(it.data, appContext!!) {
+                                if ( binding.viewPager.currentItem < quizViewModel.getRound()) {
+                                    Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
+                                    return@ViewPagerAdapter
+                                }
+                                if (quizViewModel.isUserChoiceCorrect(it)) {
+                                    quizViewModel.incrementUserScore()
+                                    quizViewModel.incrementRound()
+                                    binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
+                                    setScore()
+                                    return@ViewPagerAdapter
+                                } else {
+                                    giveFeedback(it[2] as View, it[4] as Int)
+                                    return@ViewPagerAdapter
+                                }
                             }
+                            binding.viewPager.apply {
+                                adapter = _adapter
+                            }
+                            return@collect
                         }
                     }
                 }
             }
         }
-    }
-
-    private fun startQuiz(questionList: List<Result>){
-        setScore()
-        val _adapter = ViewPagerAdapter(questionList, appContext!!) {
-            if ( binding.viewPager.currentItem < quizViewModel.getRound()) {
-                Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
-                return@ViewPagerAdapter
-            }
-            if (quizViewModel.isUserChoiceCorrect(it)) {
-                    quizViewModel.incrementUserScore()
-                    quizViewModel.incrementRound()
-                    binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
-                    setScore()
-                    return@ViewPagerAdapter
-            } else {
-                giveFeedback(it[2] as View, it[4] as Int)
-                return@ViewPagerAdapter
-            }
-        }
-        binding.viewPager.apply {
-            adapter = _adapter
-        }
-        return
     }
 
     private fun setScore() {
