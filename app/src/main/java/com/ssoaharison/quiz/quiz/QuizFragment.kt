@@ -181,8 +181,8 @@ class QuizFragment : Fragment() {
     }
 
     private fun giveFeedback(viewToAnimate: View, color: Int) {
-        viewToAnimate.startAnimation(animFadeIn)
         viewToAnimate.backgroundTintList = ContextCompat.getColorStateList(appContext!!, R.color.red700)
+        viewToAnimate.startAnimation(animFadeIn)
         lifecycleScope.launch {
             delay(700)
             viewToAnimate.backgroundTintList = ContextCompat.getColorStateList(appContext!!, color)
