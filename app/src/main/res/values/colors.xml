@@ -6,6 +6,7 @@
     <color name="red700">#d32f2f</color>
     <color name="transparent">#00000000</color>
 
+    <!--
     <color name="grey700">#434343</color>
     <color name="grey500">#7b7b7b</color>
     <color name="grey200">#d9d9d9</color>
@@ -13,6 +14,19 @@
     <color name="grey50">#f1f1f1</color>
     <color name="grey25">#f6f6f6</color>
     <color name="grey15">#fbfbfb</color>
+    -->
+
+    <color name="grey50">#f9fafb</color>
+    <color name="grey100">#f3f4f6</color>
+    <color name="grey200">#e5e7eb</color>
+    <color name="grey300">#d1d5db</color>
+    <color name="grey400">#9ca3af</color>
+    <color name="grey500">#6b7280</color>
+    <color name="grey600">#4b5563</color>
+    <color name="grey700">#374151</color>
+    <color name="grey800">#1f2937</color>
+    <color name="grey900">#111827</color>
+    <color name="grey950">#030712</color>
 
     <color name="green">#03C988</color>
     <color name="blue">#3559E0</color>

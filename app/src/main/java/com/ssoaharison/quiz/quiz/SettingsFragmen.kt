@@ -54,13 +54,18 @@ class SettingsFragment(): DialogFragment() {
             if (questionSum.isNullOrEmpty() || questionSum.toString().toInt() < 5) {
                 tvNumber?.error = "Questions must be 5 or more for a better experience."
             } else {
-                val settingsModel = SettingsModel(
-                    number = questionSum.toString().toInt(),
-                    category = QuizCategoryHelper().selectCategory(tvCategory?.text.toString()),
-                    difficulty = tvDifficulty?.text.toString().lowercase(),
-                    type = QuizCategoryHelper().decodeType(tvType?.text.toString())
-                )
-                listener.onSettingsDialogPositiveClick(settingsModel)
+                val settingsModel =
+                    QuizCategoryHelper().selectCategory(tvCategory?.text.toString())?.let { it1 ->
+                        SettingsModel(
+                            number = questionSum.toString().toInt(),
+                            category = it1,
+                            difficulty = tvDifficulty?.text.toString().lowercase(),
+                            type = QuizCategoryHelper().decodeType(tvType?.text.toString())
+                        )
+                    }
+                if (settingsModel != null) {
+                    listener.onSettingsDialogPositiveClick(settingsModel)
+                }
 //                setFragmentResult("requestKey", bundleOf("requestKey" to settingsModel))
                 dismiss()
             }

@@ -1,13 +1,15 @@
 package com.ssoaharison.quiz.quiz
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ssoaharison.quiz.backend.QuizRepository
+import com.ssoaharison.quiz.model.ExternalResult
 import com.ssoaharison.quiz.model.Result
-import com.ssoaharison.quiz.util.UiState
+import com.ssoaharison.quiz.model.UserAnswerModel
 import com.ssoaharison.quiz.util.EXAMPLE_QUESTIONS
+import com.ssoaharison.quiz.util.UiState
+import com.ssoaharison.quiz.util.toExternal
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,10 +21,9 @@ class QuizQuestionMultipleViewModel constructor(
     private val quizRepository: QuizRepository
 ): ViewModel() {
 
-    private var _questionList = MutableStateFlow<UiState<List<Result>>>(UiState.Loading)
-    val questionList: StateFlow<UiState<List<Result>>> = _questionList.asStateFlow()
+    private var _questionList = MutableStateFlow<UiState<List<ExternalResult>>>(UiState.Loading)
+    val questionList: StateFlow<UiState<List<ExternalResult>>> = _questionList.asStateFlow()
     var job: Job? = null
-    val loading = MutableLiveData<Boolean>()
     private var userScore = 0
     private var round = 0
 
@@ -30,17 +31,17 @@ class QuizQuestionMultipleViewModel constructor(
         job?.cancel()
         job = viewModelScope.launch {
             try {
-                val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
-                _questionList.value = UiState.Success(response.body()?.results!!)
-                //val response = EXAMPLE_QUESTIONS
-                //_questionList.value = UiState.Success(response)
+                // Switch to this response on App Demo or Release
+                //val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
+                val response = null
+                _questionList.value = UiState.Success(response ?: EXAMPLE_QUESTIONS.toExternal())
             } catch (e:IOException) {
                 _questionList.value = UiState.Error(e.message.toString())
             }
         }
     }
 
-    fun isUserChoiceCorrect(choice: List<Any>) = choice[0] == choice[1]
+    fun isUserChoiceCorrect(choice: UserAnswerModel) = choice.correctAnswer == choice.userAnswer
 
     fun incrementUserScore() {
         userScore += 1

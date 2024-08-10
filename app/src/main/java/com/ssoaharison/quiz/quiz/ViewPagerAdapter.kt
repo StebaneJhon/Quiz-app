@@ -13,13 +13,13 @@ import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.ssoaharison.quiz.R
-import com.ssoaharison.quiz.model.Result
-import com.ssoaharison.quiz.util.QUESTION_FONT_TINTS
+import com.ssoaharison.quiz.model.ExternalResult
+import com.ssoaharison.quiz.model.UserAnswerModel
 
 class ViewPagerAdapter(
-    val questions: List<Result>,
+    val questions: List<ExternalResult>,
     val appContext: Context,
-    private val userChoice: (List<Any>) -> Unit
+    private val userChoice: (UserAnswerModel) -> Unit
 ): RecyclerView.Adapter<ViewPagerAdapter.ViewPagerViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.ly_quiz_card, parent, false)
@@ -49,13 +49,12 @@ class ViewPagerAdapter(
 
         @SuppressLint("StringFormatMatches")
         fun bind(
-            question: Result,
+            question: ExternalResult,
             context: Context,
             questionNumber: Int,
-            userChoice: (List<Any>) -> Unit
+            userChoice: (UserAnswerModel) -> Unit
         ) {
-            val questionBackgroundTint = QUESTION_FONT_TINTS.random()
-            quizQuestionContainer.backgroundTintList = ContextCompat.getColorStateList(context, questionBackgroundTint)
+            quizQuestionContainer.backgroundTintList = ContextCompat.getColorStateList(context, question.backgroundColor)
             Log.e("QuizFragment", question.correctAnswer)
             tvQuestion.text = HtmlCompat.fromHtml(question.question, HtmlCompat.FROM_HTML_MODE_LEGACY)
             tvProgression.text = context.getString(
@@ -75,10 +74,10 @@ class ViewPagerAdapter(
                 answer3.text = HtmlCompat.fromHtml(answers[2], HtmlCompat.FROM_HTML_MODE_LEGACY)
                 answer4.text = HtmlCompat.fromHtml(answers[3], HtmlCompat.FROM_HTML_MODE_LEGACY)
             }
-            answer1.setOnClickListener { userChoice(listOf(question.correctAnswer, answer1.text.toString(), quizQuestionContainer, questionNumber, questionBackgroundTint!!)) }
-            answer2.setOnClickListener { userChoice(listOf(question.correctAnswer, answer2.text.toString(), quizQuestionContainer, questionNumber, questionBackgroundTint!!)) }
-            answer3.setOnClickListener { userChoice(listOf(question.correctAnswer, answer3.text.toString(), quizQuestionContainer, questionNumber, questionBackgroundTint!!)) }
-            answer4.setOnClickListener { userChoice(listOf(question.correctAnswer, answer4.text.toString(), quizQuestionContainer, questionNumber, questionBackgroundTint!!)) }
+            answer1.setOnClickListener { userChoice(UserAnswerModel(question.correctAnswer, answer1.text.toString(), answer1, questionNumber, question.backgroundColor)) }
+            answer2.setOnClickListener { userChoice(UserAnswerModel(question.correctAnswer, answer2.text.toString(), answer2, questionNumber, question.backgroundColor)) }
+            answer3.setOnClickListener { userChoice(UserAnswerModel(question.correctAnswer, answer3.text.toString(), answer3, questionNumber, question.backgroundColor)) }
+            answer4.setOnClickListener { userChoice(UserAnswerModel(question.correctAnswer, answer4.text.toString(), answer4, questionNumber, question.backgroundColor)) }
         }
     }
 

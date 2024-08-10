@@ -8,26 +8,26 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.commit
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.ssoaharison.quiz.R
-import com.ssoaharison.quiz.backend.QuizApplication
 import com.ssoaharison.quiz.backend.QuizRepository
 import com.ssoaharison.quiz.backend.RetrofitClient
 import com.ssoaharison.quiz.databinding.ActivityMainBinding
+import com.ssoaharison.quiz.model.ExternalResult
 import com.ssoaharison.quiz.model.Result
 import com.ssoaharison.quiz.model.SettingsModel
+import com.ssoaharison.quiz.model.UserAnswerModel
 import com.ssoaharison.quiz.util.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -71,12 +71,11 @@ class MainActivity :
         animFadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
         animFadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
 
-        settingsModel = SettingsModel(10, 0, "", "")
-        getQuizQuestions(settingsModel!!)
-        startQuiz()
+        settingsModel = SettingsModel()
+        getQuizAndStart()
 
         binding.btRestart.setOnClickListener {
-            startQuiz()
+            getQuizAndRestart()
         }
 
         binding.btSettings.setOnClickListener {
@@ -92,22 +91,14 @@ class MainActivity :
         newDeckDialog.show(fragmentManager, "dialog settings")
     }
 
-    private fun getQuizQuestions(settingsModel: SettingsModel) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                quizViewModel.getQuizQuestionMultiple(settingsModel.number!!, settingsModel.category!!, settingsModel.difficulty!!, settingsModel.type!!)
-            }
-        }
-    }
-
-    private fun startQuiz(){
+    private fun getQuizAndStart(){
         quizViewModel.initUserScore()
         quizViewModel.initRound()
         quizQuestionContainer = findViewById(R.id.cl_quiz_uestion_container)
         binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
         setScore()
+        quizViewModel.getQuizQuestionMultiple(settingsModel?.number!!, settingsModel?.category!!, settingsModel?.difficulty!!, settingsModel?.type!!)
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 quizViewModel.questionList.collect {
                     when (it) {
                         is UiState.Loading -> {
@@ -120,19 +111,46 @@ class MainActivity :
                         }
 
                         is UiState.Success -> {
-                            lunchQuiz(it)
+                            startQuiz(it.data)
                         }
                     }
                 }
-            }
         }
     }
 
-    private fun lunchQuiz(it: UiState.Success<List<Result>>) {
+    private fun getQuizAndRestart(){
+        quizViewModel.initUserScore()
+        quizViewModel.initRound()
+        quizQuestionContainer = findViewById(R.id.cl_quiz_uestion_container)
+        binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
+        setScore()
+        lifecycleScope.launch {
+                quizViewModel
+                    .questionList
+                    .collect {
+                    when (it) {
+                        is UiState.Loading -> {
+                            binding.cvLoading.isVisible = true
+                        }
+
+                        is UiState.Error -> {
+                            binding.cvLoading.isVisible = false
+                            Log.e(TAG, it.errorMessage)
+                        }
+
+                        is UiState.Success -> {
+                            startQuiz(it.data)
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun startQuiz(it: List<ExternalResult>) {
         quizViewModel.initUserScore()
         quizViewModel.initRound()
         binding.cvLoading.isVisible = false
-        viewPagerAdapter = ViewPagerAdapter(it.data, this@MainActivity) {
+        viewPagerAdapter = ViewPagerAdapter(it, this@MainActivity) {
             if (binding.viewPager.currentItem < quizViewModel.getRound()) {
                 Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
                 return@ViewPagerAdapter
@@ -142,26 +160,56 @@ class MainActivity :
                 quizViewModel.incrementRound()
                 binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
                 setScore()
+                giveFeedback(true, it.view)
                 return@ViewPagerAdapter
             } else {
-                giveFeedback(it[2] as View, it[4] as Int)
+                giveFeedback(false, it.view)
                 return@ViewPagerAdapter
             }
         }
         binding.viewPager.adapter = viewPagerAdapter
     }
 
+
+
     private fun setScore() {
         binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
     }
 
-    private fun giveFeedback(viewToAnimate: View, color: Int) {
-        viewToAnimate.backgroundTintList = ContextCompat.getColorStateList(this, R.color.red700)
-        viewToAnimate.startAnimation(animFadeIn)
-        lifecycleScope.launch {
-            delay(700)
-            viewToAnimate.backgroundTintList = ContextCompat.getColorStateList(this@MainActivity, color)
-            viewToAnimate.startAnimation(animFadeIn)
+    private fun onWrongAnswer(button: MaterialButton) {
+        button.apply {
+            icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_cancel_outlinepx)
+            iconTint = ContextCompat.getColorStateList(this@MainActivity, R.color.red700)
+            iconSize = 70
+            strokeWidth = 7
+            strokeColor = ContextCompat.getColorStateList(this@MainActivity, R.color.red700)
+        }
+    }
+
+    private fun onCorrectAnswer(button: MaterialButton) {
+        button.apply {
+            icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_check_circle_outline)
+            iconTint = ContextCompat.getColorStateList(this@MainActivity, R.color.green)
+            iconSize = 70
+            strokeWidth = 7
+            strokeColor = ContextCompat.getColorStateList(this@MainActivity, R.color.green)
+        }
+    }
+
+    private fun resetButton(button: MaterialButton) {
+        button.apply {
+            icon = null
+            strokeWidth = 0
+        }
+    }
+
+    private fun giveFeedback(isUserAnswerCorrect: Boolean, button: MaterialButton) {
+        if (isUserAnswerCorrect) {
+            onCorrectAnswer(button)
+            //button.startAnimation(animFadeIn)
+        } else {
+            onWrongAnswer(button)
+            //button.startAnimation(animFadeIn)
         }
     }
 
@@ -172,7 +220,6 @@ class MainActivity :
 
     override fun onSettingsDialogPositiveClick(settings: SettingsModel) {
         settingsModel = settings
-        getQuizQuestions(settings)
-        startQuiz()
+        getQuizAndStart()
     }
 }

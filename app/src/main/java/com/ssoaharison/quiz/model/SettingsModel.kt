@@ -5,8 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SettingsModel(
-    var number: Int? = null,
-    var category: Int? = null,
-    var difficulty: String? = null,
-    var type: String? = null
+    var number: Int = 10,
+    var category: Int = 0,
+    var difficulty: String = "",
+    var type: String = "",
 ): Parcelable
