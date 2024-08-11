@@ -62,7 +62,8 @@ class ViewPagerAdapter(
                 "$questionNumber",
                 "${questions.size}"
             )
-            val answers = randomizeAnswers(question.incorrectAnswers, question.correctAnswer)
+            val formatedCorrectAnswer = HtmlCompat.fromHtml(question.correctAnswer, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+            val answers = randomizeAnswers(question.incorrectAnswers, formatedCorrectAnswer)
             if (answers.size == 2) {
                 answer1.text = HtmlCompat.fromHtml(answers[0], HtmlCompat.FROM_HTML_MODE_LEGACY)
                 answer2.text = HtmlCompat.fromHtml(answers[1], HtmlCompat.FROM_HTML_MODE_LEGACY)
@@ -74,10 +75,10 @@ class ViewPagerAdapter(
                 answer3.text = HtmlCompat.fromHtml(answers[2], HtmlCompat.FROM_HTML_MODE_LEGACY)
                 answer4.text = HtmlCompat.fromHtml(answers[3], HtmlCompat.FROM_HTML_MODE_LEGACY)
             }
-            answer1.setOnClickListener { userChoice(UserAnswerModel(question.correctAnswer, answer1.text.toString(), answer1, questionNumber, question.backgroundColor)) }
-            answer2.setOnClickListener { userChoice(UserAnswerModel(question.correctAnswer, answer2.text.toString(), answer2, questionNumber, question.backgroundColor)) }
-            answer3.setOnClickListener { userChoice(UserAnswerModel(question.correctAnswer, answer3.text.toString(), answer3, questionNumber, question.backgroundColor)) }
-            answer4.setOnClickListener { userChoice(UserAnswerModel(question.correctAnswer, answer4.text.toString(), answer4, questionNumber, question.backgroundColor)) }
+            answer1.setOnClickListener { userChoice(UserAnswerModel(formatedCorrectAnswer, answer1.text.toString(), answer1, questionNumber, question.backgroundColor)) }
+            answer2.setOnClickListener { userChoice(UserAnswerModel(formatedCorrectAnswer, answer2.text.toString(), answer2, questionNumber, question.backgroundColor)) }
+            answer3.setOnClickListener { userChoice(UserAnswerModel(formatedCorrectAnswer, answer3.text.toString(), answer3, questionNumber, question.backgroundColor)) }
+            answer4.setOnClickListener { userChoice(UserAnswerModel(formatedCorrectAnswer, answer4.text.toString(), answer4, questionNumber, question.backgroundColor)) }
         }
     }
 

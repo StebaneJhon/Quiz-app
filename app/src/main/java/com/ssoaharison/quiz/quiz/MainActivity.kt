@@ -5,38 +5,32 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
-import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.ssoaharison.quiz.R
 import com.ssoaharison.quiz.backend.QuizRepository
 import com.ssoaharison.quiz.backend.RetrofitClient
 import com.ssoaharison.quiz.databinding.ActivityMainBinding
 import com.ssoaharison.quiz.model.ExternalResult
-import com.ssoaharison.quiz.model.Result
 import com.ssoaharison.quiz.model.SettingsModel
-import com.ssoaharison.quiz.model.UserAnswerModel
 import com.ssoaharison.quiz.util.UiState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 class MainActivity :
     AppCompatActivity(),
-    SettingsFragment.SettingsFragmentListener
-{
+    SettingsFragment.SettingsFragmentListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -65,7 +59,11 @@ class MainActivity :
         val view = binding.root
         setContentView(view)
 
-        window.statusBarColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainerLowest, Color.BLACK)
+        window.statusBarColor = MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorSurfaceContainerLowest,
+            Color.BLACK
+        )
 
         binding.viewPager.isUserInputEnabled = false
         animFadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
@@ -80,9 +78,63 @@ class MainActivity :
 
         binding.btSettings.setOnClickListener {
             showSettings()
-
         }
 
+        binding.btNext.setOnClickListener {
+            nextQuestion()
+        }
+
+//        binding.btPrevious.setOnClickListener {
+//            previousQuestion()
+//        }
+
+    }
+
+    private fun nextQuestion() {
+        val itemPosition = binding.viewPager.currentItem
+        if (itemPosition.plus(1) == quizViewModel.getQuestionSum()) {
+            showReviewDialog(
+                quizViewModel.getUserScore(),
+                quizViewModel.getMissedSun(),
+                quizViewModel.getMissedTime(),
+                quizViewModel.getQuestionSum()
+            )
+        } else {
+            binding.viewPager.setCurrentItem(itemPosition.plus(1), true)
+            restoreAnswerButtons()
+            areBackAndForwardButtonEnabled(false)
+            quizViewModel.incrementRound()
+            quizViewModel.initAttempt()
+        }
+    }
+
+    private fun previousQuestion() {
+        val itemPosition = binding.viewPager.currentItem
+        if (itemPosition > 0) {
+            restoreAnswerButtons()
+            binding.viewPager.setCurrentItem(itemPosition.minus(1), true)
+            areBackAndForwardButtonEnabled(false)
+            quizViewModel.decrementRound()
+        }
+    }
+
+    private fun restoreAnswerButtons() {
+        binding.viewPager.findViewById<MaterialButton>(R.id.btAnswer1).apply {
+            icon = null
+            strokeWidth = 0
+        }
+        binding.viewPager.findViewById<MaterialButton>(R.id.btAnswer2).apply {
+            icon = null
+            strokeWidth = 0
+        }
+        binding.viewPager.findViewById<MaterialButton>(R.id.btAnswer3).apply {
+            icon = null
+            strokeWidth = 0
+        }
+        binding.viewPager.findViewById<MaterialButton>(R.id.btAnswer4).apply {
+            icon = null
+            strokeWidth = 0
+        }
     }
 
     private fun showSettings() {
@@ -91,53 +143,56 @@ class MainActivity :
         newDeckDialog.show(fragmentManager, "dialog settings")
     }
 
-    private fun getQuizAndStart(){
+    private fun getQuizAndStart() {
         quizViewModel.initUserScore()
         quizViewModel.initRound()
+        quizViewModel.initAttempt()
         quizQuestionContainer = findViewById(R.id.cl_quiz_uestion_container)
         binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
         setScore()
-        quizViewModel.getQuizQuestionMultiple(settingsModel?.number!!, settingsModel?.category!!, settingsModel?.difficulty!!, settingsModel?.type!!)
+        quizViewModel.getQuizQuestionMultiple(
+            settingsModel?.number!!,
+            settingsModel?.category!!,
+            settingsModel?.difficulty!!,
+            settingsModel?.type!!
+        )
         lifecycleScope.launch {
-                quizViewModel.questionList.collect {
-                    when (it) {
-                        is UiState.Loading -> {
-                            binding.cvLoading.isVisible = true
-                        }
-
-                        is UiState.Error -> {
-                            binding.cvLoading.isVisible = false
-                            Log.e(TAG, it.errorMessage)
-                        }
-
-                        is UiState.Success -> {
-                            startQuiz(it.data)
-                        }
+            quizViewModel.questionList.collect {
+                when (it) {
+                    is UiState.Loading -> {
+                        binding.cvLoading.isVisible = true
+                    }
+                    is UiState.Error -> {
+                        binding.cvLoading.isVisible = false
+                        Log.e(TAG, it.errorMessage)
+                    }
+                    is UiState.Success -> {
+                        startQuiz(it.data)
                     }
                 }
+            }
         }
     }
 
-    private fun getQuizAndRestart(){
+    private fun getQuizAndRestart() {
         quizViewModel.initUserScore()
         quizViewModel.initRound()
+        quizViewModel.initAttempt()
         quizQuestionContainer = findViewById(R.id.cl_quiz_uestion_container)
         binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
         setScore()
         lifecycleScope.launch {
-                quizViewModel
-                    .questionList
-                    .collect {
+            quizViewModel
+                .questionList
+                .collect {
                     when (it) {
                         is UiState.Loading -> {
                             binding.cvLoading.isVisible = true
                         }
-
                         is UiState.Error -> {
                             binding.cvLoading.isVisible = false
                             Log.e(TAG, it.errorMessage)
                         }
-
                         is UiState.Success -> {
                             startQuiz(it.data)
                         }
@@ -152,22 +207,56 @@ class MainActivity :
         binding.cvLoading.isVisible = false
         viewPagerAdapter = ViewPagerAdapter(it, this@MainActivity) {
             if (binding.viewPager.currentItem < quizViewModel.getRound()) {
-                Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
+                showReviewDialog(
+                    quizViewModel.getUserScore(),
+                    quizViewModel.getMissedSun(),
+                    quizViewModel.getMissedTime(),
+                    quizViewModel.getQuestionSum()
+                )
+                //Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
                 return@ViewPagerAdapter
             }
             if (quizViewModel.isUserChoiceCorrect(it)) {
-                quizViewModel.incrementUserScore()
-                quizViewModel.incrementRound()
-                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
+                quizViewModel.increaseAttempt()
+                quizViewModel.updateUserScore()
+                quizViewModel.updateMissedTime()
+//                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
                 setScore()
                 giveFeedback(true, it.view)
                 return@ViewPagerAdapter
             } else {
+                quizViewModel.increaseAttempt()
                 giveFeedback(false, it.view)
                 return@ViewPagerAdapter
             }
         }
         binding.viewPager.adapter = viewPagerAdapter
+    }
+
+    private fun showReviewDialog(
+        knownSum: Int,
+        missedSum: Int,
+        missedTime: Int,
+        questionSum: Int
+    ) {
+        val message = "Known questions: $knownSum\n" +
+                      "Missed questions: $missedSum\n" +
+                      "Missed Time: $missedTime\n" +
+                      "Question Sum: $questionSum\n"
+        val builder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
+        builder
+            .setMessage(message)
+            .setTitle("You finished the quiz with: ")
+            .setPositiveButton("Restart") { dialog, which ->
+                getQuizAndRestart()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Change settings") { dialog, which ->
+                showSettings()
+                dialog.dismiss()
+            }
+
+        builder.show()
     }
 
 
@@ -178,20 +267,20 @@ class MainActivity :
 
     private fun onWrongAnswer(button: MaterialButton) {
         button.apply {
-            icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_cancel_outlinepx)
+            icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_cancel_filled)
             iconTint = ContextCompat.getColorStateList(this@MainActivity, R.color.red700)
             iconSize = 70
-            strokeWidth = 7
+            strokeWidth = 4
             strokeColor = ContextCompat.getColorStateList(this@MainActivity, R.color.red700)
         }
     }
 
     private fun onCorrectAnswer(button: MaterialButton) {
         button.apply {
-            icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_check_circle_outline)
+            icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_check_circle_filled)
             iconTint = ContextCompat.getColorStateList(this@MainActivity, R.color.green)
             iconSize = 70
-            strokeWidth = 7
+            strokeWidth = 4
             strokeColor = ContextCompat.getColorStateList(this@MainActivity, R.color.green)
         }
     }
@@ -206,11 +295,21 @@ class MainActivity :
     private fun giveFeedback(isUserAnswerCorrect: Boolean, button: MaterialButton) {
         if (isUserAnswerCorrect) {
             onCorrectAnswer(button)
-            //button.startAnimation(animFadeIn)
         } else {
             onWrongAnswer(button)
-            //button.startAnimation(animFadeIn)
         }
+        areBackAndForwardButtonEnabled(isUserAnswerCorrect)
+    }
+
+    private fun areBackAndForwardButtonEnabled(areEnabled: Boolean) {
+        binding.btNext.apply {
+            isVisible = areEnabled
+            isEnabled = areEnabled
+        }
+//        binding.btPrevious.apply {
+//            isVisible = areEnabled
+//            isEnabled = areEnabled
+//        }
     }
 
     inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ssoaharison.quiz.backend.QuizRepository
 import com.ssoaharison.quiz.model.ExternalResult
-import com.ssoaharison.quiz.model.Result
 import com.ssoaharison.quiz.model.UserAnswerModel
 import com.ssoaharison.quiz.util.EXAMPLE_QUESTIONS
 import com.ssoaharison.quiz.util.UiState
@@ -26,6 +25,9 @@ class QuizQuestionMultipleViewModel constructor(
     var job: Job? = null
     private var userScore = 0
     private var round = 0
+    private var attempt = 0
+    private var missedTime = 0
+    private var questionSum = 10
 
     fun getQuizQuestionMultiple(amount: Int, category: Int, difficulty: String, type: String) {
         job?.cancel()
@@ -43,12 +45,41 @@ class QuizQuestionMultipleViewModel constructor(
 
     fun isUserChoiceCorrect(choice: UserAnswerModel) = choice.correctAnswer == choice.userAnswer
 
-    fun incrementUserScore() {
+    fun updateMissedTime() {
+        missedTime += attempt.minus(1)
+    }
+
+    fun getMissedTime() = missedTime
+
+    fun getMissedSun() = questionSum.minus(userScore)
+
+    fun getQuestionSum() = questionSum
+
+    private fun incrementUserScore() {
         userScore += 1
     }
 
+    fun updateUserScore() {
+        if (attempt <= 1) {
+            incrementUserScore()
+        }
+    }
+
     fun incrementRound() {
-        round += 1
+        round++
+    }
+    fun decrementRound() {
+        if (round > 0) {
+            round--
+        }
+    }
+
+    fun increaseAttempt() {
+        attempt++
+    }
+
+    fun initAttempt() {
+        attempt = 0
     }
 
     fun getRound() = round
