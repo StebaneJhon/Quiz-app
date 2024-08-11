@@ -72,6 +72,8 @@ class ViewPagerAdapter(
             } else {
                 answer1.text = HtmlCompat.fromHtml(answers[0], HtmlCompat.FROM_HTML_MODE_LEGACY)
                 answer2.text = HtmlCompat.fromHtml(answers[1], HtmlCompat.FROM_HTML_MODE_LEGACY)
+                answer3.visibility = View.VISIBLE
+                answer4.visibility = View.VISIBLE
                 answer3.text = HtmlCompat.fromHtml(answers[2], HtmlCompat.FROM_HTML_MODE_LEGACY)
                 answer4.text = HtmlCompat.fromHtml(answers[3], HtmlCompat.FROM_HTML_MODE_LEGACY)
             }

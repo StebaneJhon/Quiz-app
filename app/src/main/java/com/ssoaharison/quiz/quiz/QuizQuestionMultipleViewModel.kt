@@ -27,15 +27,15 @@ class QuizQuestionMultipleViewModel constructor(
     private var round = 0
     private var attempt = 0
     private var missedTime = 0
-    private var questionSum = 10
+    private var questionSum = 0
 
     fun getQuizQuestionMultiple(amount: Int, category: Int, difficulty: String, type: String) {
         job?.cancel()
         job = viewModelScope.launch {
             try {
                 // Switch to this response on App Demo or Release
-                //val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
-                val response = null
+                val response = quizRepository.getQuizQuestionMultiple("$amount", setCategory(category), difficulty, type)
+//                val response = null
                 _questionList.value = UiState.Success(response ?: EXAMPLE_QUESTIONS.toExternal())
             } catch (e:IOException) {
                 _questionList.value = UiState.Error(e.message.toString())
@@ -43,10 +43,18 @@ class QuizQuestionMultipleViewModel constructor(
         }
     }
 
+    fun setQuestionSum(sum: Int) {
+        questionSum = sum
+    }
+
     fun isUserChoiceCorrect(choice: UserAnswerModel) = choice.correctAnswer == choice.userAnswer
 
     fun updateMissedTime() {
         missedTime += attempt.minus(1)
+    }
+
+    fun iniMissedTime() {
+        missedTime = 0
     }
 
     fun getMissedTime() = missedTime

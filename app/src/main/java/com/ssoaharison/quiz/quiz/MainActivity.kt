@@ -1,5 +1,7 @@
 package com.ssoaharison.quiz.quiz
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -49,6 +51,9 @@ class MainActivity :
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
+    private var sharedPref: SharedPreferences? = null
+    private var editor: SharedPreferences.Editor? = null
+
     companion object {
         private const val TAG = "MainActivity"
     }
@@ -58,6 +63,11 @@ class MainActivity :
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        sharedPref = getSharedPreferences("settingsPref", Context.MODE_PRIVATE)
+        editor = sharedPref?.edit()
+        settingsModel = getSettingsPref()
+        quizViewModel.setQuestionSum(settingsModel!!.number)
 
         window.statusBarColor = MaterialColors.getColor(
             this,
@@ -69,7 +79,6 @@ class MainActivity :
         animFadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
         animFadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
 
-        settingsModel = SettingsModel()
         getQuizAndStart()
 
         binding.btRestart.setOnClickListener {
@@ -150,6 +159,7 @@ class MainActivity :
         quizQuestionContainer = findViewById(R.id.cl_quiz_uestion_container)
         binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
         setScore()
+        val ss = settingsModel
         quizViewModel.getQuizQuestionMultiple(
             settingsModel?.number!!,
             settingsModel?.category!!,
@@ -178,6 +188,7 @@ class MainActivity :
         quizViewModel.initUserScore()
         quizViewModel.initRound()
         quizViewModel.initAttempt()
+        quizViewModel.iniMissedTime()
         quizQuestionContainer = findViewById(R.id.cl_quiz_uestion_container)
         binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
         setScore()
@@ -203,6 +214,7 @@ class MainActivity :
 
     private fun startQuiz(it: List<ExternalResult>) {
         quizViewModel.initUserScore()
+        quizViewModel.iniMissedTime()
         quizViewModel.initRound()
         binding.cvLoading.isVisible = false
         viewPagerAdapter = ViewPagerAdapter(it, this@MainActivity) {
@@ -318,7 +330,30 @@ class MainActivity :
     }
 
     override fun onSettingsDialogPositiveClick(settings: SettingsModel) {
-        settingsModel = settings
+        updateSettingsPref(settings)
+        settingsModel = getSettingsPref()
+        quizViewModel.setQuestionSum(settingsModel!!.number)
         getQuizAndStart()
+    }
+
+    private fun updateSettingsPref(settings: SettingsModel) {
+        editor?.apply {
+            putInt("question_number", settings.number)
+            putInt("question_category", settings.category)
+            putString("question_difficulty", settings.difficulty)
+            putString("question_type", settings.type)
+            apply()
+        }
+    }
+
+    private fun getSettingsPref(): SettingsModel {
+        return sharedPref?.let {
+            SettingsModel(
+                it.getInt("question_number", 10),
+                it.getInt("question_category", 0),
+                it.getString("question_difficulty", "")!!,
+                it.getString("question_type", "")!!,
+            )
+        } ?: SettingsModel()
     }
 }

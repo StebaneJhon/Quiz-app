@@ -42,6 +42,23 @@ class QuizCategoryHelper {
             else -> { "" }
         }
     }
+
+    fun encodeType(code: String): String {
+        return when (code) {
+            "boolean" -> {"True & False"}
+            "multiple" -> {"Multiple Choice"}
+            else -> {""}
+        }
+    }
+
+    fun getCategoryByNumber(number: Int): String {
+        categories.keys.forEach {
+            if (categories[it] == number) {
+                return it
+            }
+        }
+        return "Any"
+    }
     fun getCategories() = categories.keys.toTypedArray()
     fun selectCategory(category: String) = categories[category]
 }
