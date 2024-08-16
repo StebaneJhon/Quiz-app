@@ -71,14 +71,13 @@ class SettingsFragment(): DialogFragment() {
                         SettingsModel(
                             number = questionSum.toString().toInt(),
                             category = it1,
-                            difficulty = tvDifficulty?.text.toString().lowercase(),
+                            difficulty = QuizCategoryHelper().encodeDifficulty(tvDifficulty?.text.toString()).lowercase(),
                             type = QuizCategoryHelper().decodeType(tvType?.text.toString())
                         )
                     }
                 if (settingsModel != null) {
                     listener.onSettingsDialogPositiveClick(settingsModel)
                 }
-//                setFragmentResult("requestKey", bundleOf("requestKey" to settingsModel))
                 dismiss()
             }
         }

@@ -9,7 +9,6 @@ import android.os.Parcelable
 import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -19,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.ssoaharison.quiz.R
 import com.ssoaharison.quiz.backend.QuizRepository
 import com.ssoaharison.quiz.backend.RetrofitClient
@@ -93,10 +91,6 @@ class MainActivity :
             nextQuestion()
         }
 
-//        binding.btPrevious.setOnClickListener {
-//            previousQuestion()
-//        }
-
     }
 
     private fun nextQuestion() {
@@ -111,7 +105,7 @@ class MainActivity :
         } else {
             binding.viewPager.setCurrentItem(itemPosition.plus(1), true)
             restoreAnswerButtons()
-            areBackAndForwardButtonEnabled(false)
+            forwardButtonEnabled(false)
             quizViewModel.incrementRound()
             quizViewModel.initAttempt()
         }
@@ -122,7 +116,7 @@ class MainActivity :
         if (itemPosition > 0) {
             restoreAnswerButtons()
             binding.viewPager.setCurrentItem(itemPosition.minus(1), true)
-            areBackAndForwardButtonEnabled(false)
+            forwardButtonEnabled(false)
             quizViewModel.decrementRound()
         }
     }
@@ -159,7 +153,6 @@ class MainActivity :
         quizQuestionContainer = findViewById(R.id.cl_quiz_uestion_container)
         binding.tvUserScore.text = getString(R.string.text_score, "${quizViewModel.getUserScore()}")
         setScore()
-        val ss = settingsModel
         quizViewModel.getQuizQuestionMultiple(
             settingsModel?.number!!,
             settingsModel?.category!!,
@@ -216,6 +209,7 @@ class MainActivity :
         quizViewModel.initUserScore()
         quizViewModel.iniMissedTime()
         quizViewModel.initRound()
+        forwardButtonEnabled(false)
         binding.cvLoading.isVisible = false
         viewPagerAdapter = ViewPagerAdapter(it, this@MainActivity) {
             if (binding.viewPager.currentItem < quizViewModel.getRound()) {
@@ -225,14 +219,12 @@ class MainActivity :
                     quizViewModel.getMissedTime(),
                     quizViewModel.getQuestionSum()
                 )
-                //Snackbar.make(binding.root, "You finished the Quiz!", Snackbar.LENGTH_LONG).show()
                 return@ViewPagerAdapter
             }
             if (quizViewModel.isUserChoiceCorrect(it)) {
                 quizViewModel.increaseAttempt()
                 quizViewModel.updateUserScore()
                 quizViewModel.updateMissedTime()
-//                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
                 setScore()
                 giveFeedback(true, it.view)
                 return@ViewPagerAdapter
@@ -259,11 +251,15 @@ class MainActivity :
         builder
             .setMessage(message)
             .setTitle("You finished the quiz with: ")
-            .setPositiveButton("Restart") { dialog, which ->
+            .setPositiveButton("Restart") { dialog, _ ->
                 getQuizAndRestart()
                 dialog.dismiss()
             }
-            .setNegativeButton("Change settings") { dialog, which ->
+            .setNegativeButton("New") { dialog, _ ->
+                getQuizAndRestart()
+                dialog.dismiss()
+            }
+            .setNeutralButton("Settings") { dialog, _ ->
                 showSettings()
                 dialog.dismiss()
             }
@@ -310,18 +306,14 @@ class MainActivity :
         } else {
             onWrongAnswer(button)
         }
-        areBackAndForwardButtonEnabled(isUserAnswerCorrect)
+        forwardButtonEnabled(isUserAnswerCorrect)
     }
 
-    private fun areBackAndForwardButtonEnabled(areEnabled: Boolean) {
+    private fun forwardButtonEnabled(isTrue: Boolean) {
         binding.btNext.apply {
-            isVisible = areEnabled
-            isEnabled = areEnabled
+            isVisible = isTrue
+            isEnabled = isTrue
         }
-//        binding.btPrevious.apply {
-//            isVisible = areEnabled
-//            isEnabled = areEnabled
-//        }
     }
 
     inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {

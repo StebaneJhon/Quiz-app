@@ -85,28 +85,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btRestart" />
 
-    <!--
-    <ImageButton
-        android:visibility="gone"
-        android:id="@+id/bt_previous"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_border"
-        android:backgroundTint="?colorSurfaceContainerLow"
-        android:contentDescription="@string/restart_button_description"
-        android:padding="15dp"
-        android:src="@drawable/ic_back"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-        -->
-
     <ImageButton
         android:visibility="gone"
         android:id="@+id/bt_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_border"
-        android:backgroundTint="?colorSurfaceContainerLow"
+        android:backgroundTint="@color/grey50"
         android:contentDescription="@string/restart_button_description"
         android:padding="15dp"
         android:src="@drawable/ic_forward"

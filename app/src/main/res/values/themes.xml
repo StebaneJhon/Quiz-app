@@ -23,11 +23,12 @@
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
         <item name="titleTextColor">?colorPrimary</item>
         <item name="android:textColor">?colorOnSurface</item>
         <item name="shapeAppearanceOverlay">@style/DialogCorners</item>
-        <item name="backgroundColor">?colorSurfaceContainerLow</item>
-        <item name="android:background">?colorSurfaceContainerLow</item>
+        <item name="backgroundColor">?colorSurfaceContainerHighest</item>
+        <item name="android:background">?colorSurfaceContainerHighest</item>
     </style>
 
     <style name="Widget.App.Button" parent="Widget.Material3.Button.TextButton.Dialog">

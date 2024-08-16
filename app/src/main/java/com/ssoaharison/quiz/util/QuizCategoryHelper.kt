@@ -33,6 +33,8 @@ class QuizCategoryHelper {
     private val type = arrayOf("Any", "Multiple Choice", "True & False")
 
     fun getDifficulty() = difficulty
+    fun encodeDifficulty(difficulty: String) = if (difficulty == "Any") "" else difficulty
+
     fun getType() = type
 
     fun decodeType(type: String): String {
@@ -47,7 +49,7 @@ class QuizCategoryHelper {
         return when (code) {
             "boolean" -> {"True & False"}
             "multiple" -> {"Multiple Choice"}
-            else -> {""}
+            else -> {"Any"}
         }
     }
 

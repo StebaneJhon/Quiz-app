@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="?colorSurfaceContainerLow"
+    android:background="?colorSurfaceContainerHighest"
     android:padding="10dp">
 
     <com.google.android.material.button.MaterialButton
@@ -115,9 +115,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:backgroundTint="?colorSurfaceContainer"
+        android:backgroundTint="@color/grey50"
         android:text="@string/bt_apply_text"
-        android:textColor="?colorOnSurface"
+        android:textColor="?colorSurfaceContainerHighest"
         android:fontFamily="@font/open_sans_regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tf_question_number" />
